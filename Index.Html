@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Telegram Login Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #007bb5;
+    }
+
+    #widget-container {
+      margin-top: 20px;
+    }
+
+    #response {
+      margin-top: 30px;
+      max-width: 600px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Welcome</h2>
+  <button onclick="showTelegramLogin()">Login with Telegram</button>
+
+  <div id="widget-container"></div>
+  <div id="response"></div>
+
+  <script>
+    function showTelegramLogin() {
+      const widgetContainer = document.getElementById('widget-container');
+      widgetContainer.innerHTML = ''; // Clear any existing
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = "https://telegram.org/js/telegram-widget.js?7";
+      script.setAttribute('data-telegram-login', 'developerAbubakkar'); // ✅ No '@' here
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-userpic', 'true');
+      script.setAttribute('data-request-access', 'write');
+      script.setAttribute('data-onauth', 'onTelegramAuth');
+      widgetContainer.appendChild(script);
+    }
+
+    async function onTelegramAuth(user) {
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(user),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('response').innerHTML = `
+            <h3>✅ Login Successful</h3>
+            <p><strong>JWT Token:</strong></p>
+            <code>${data.token}</code>
+          `;
+          localStorage.setItem('token', data.token);
+        } else {
+          document.getElementById('response').innerHTML = `
+            <p>❌ ${data.message}</p>
+          `;
+        }
+      } catch (err) {
+        document.getElementById('response').innerHTML = `
+          <p>❌ ${err.message}</p>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
