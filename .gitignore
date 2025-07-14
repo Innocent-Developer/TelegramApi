@@ -19,8 +19,4 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Build output
-dist/
- build/firebase-adminsdk.json
-config/
 
