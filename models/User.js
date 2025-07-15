@@ -4,9 +4,7 @@ const userSchema = new mongoose.Schema({
   telegramId: { type: String, required: true, unique: true },
   username: String,
   firstName: String,
-  lastName: String,
-  photoUrl: String,
-  authDate: Number
-}, { timestamps: true });
+  photoUrl: String
+});
 
 module.exports = mongoose.model('User', userSchema);
